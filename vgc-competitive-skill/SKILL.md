@@ -1,6 +1,6 @@
 ---
 name: vgc-competitive
-description: Help with competitive VGC Pokémon team building, strategy, and meta analysis. Use this skill whenever the user wants to build optimized VGC teams, analyze their current teams, get moveset recommendations, understand competitive viability, or stay informed on the current competitive meta. Pulls live usage statistics AND real tournament-winning team lists (Limitless VGC, Pikalytics, Smogon) to ground recommendations in what top players actually run, not just mechanics reasoning. Use for VGC strategy questions, team building guidance, moveset optimization, item selection, EV spread recommendations, and meta-game analysis.
+description: Build, analyze, and optimize competitive VGC Pokémon teams using current-format data. Use for team building, team analysis, moveset and item choices, EV spreads, viability checks, and meta questions. Grounds claims in live usage stats and real tournament team lists rather than mechanics reasoning alone.
 compatibility: Requires web access to fetch live data from limitlessvgc.com, pikalytics.com, and data.pkmn.cc
 ---
 
@@ -10,7 +10,7 @@ A skill for helping you build, analyze, and optimize teams for VGC (Video Game C
 
 ## What This Skill Does
 
-This skill helps with all aspects of competitive VGC team building and strategy by pulling data from Smogon's competitive database:
+This skill helps with all aspects of competitive VGC team building and strategy, grounded in current-format usage stats and real tournament team lists:
 
 - **Team Building** - Generates team suggestions based on current meta usage statistics and top tournament finishes
 - **Team Analysis** - Evaluates your existing team for coverage, weaknesses, and synergy issues
@@ -42,7 +42,7 @@ Paste your current team (with movesets, items, abilities, EVs if possible) and a
 - Rate the team's overall competitiveness
 
 ### 3. Moveset & Item Optimization
-Ask about a specific Pokémon (e.g., "What moves should my Incineroar run in VGC 2025?"). The skill will:
+Ask about a specific Pokémon (e.g., "What moves should my Incineroar run?"). The skill will:
 - Pull the most common movesets from competitive data
 - Explain the reasoning behind each move choice
 - Suggest item/ability combinations
@@ -93,8 +93,9 @@ Concretely:
 
 ## Example Queries
 
-- "Build me a competitive VGC 2025 team around Indeedee"
-- "Analyze my team: Incineroar, Landorus-T, Calyrex-S, Regieleki, Dirge, Wailord"
-- "What movesets are competitive Landorus-T running in current VGC?"
-- "The meta seems to be sun-based right now—how do I counter that?"
-- "Is [Pokémon] viable in VGC 2025?"
+- "Build me a team around Sneasler for the current format"
+- "Analyze my team: Garchomp, Tyranitar, Froslass, Hisuian Arcanine, Sinistcha, Sneasler"
+- "What moves and item is Incineroar running right now?"
+- "The meta seems sun-heavy lately — how do I counter that?"
+- "Is [Pokémon] viable in the current regulation?"
+- "What's the standard EV spread for [Pokémon]?"
