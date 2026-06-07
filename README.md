@@ -58,17 +58,6 @@ This skill pulls competitive data from:
 - **Tournament results** via web search — Recent top finishes when available
 - **Meta trends** — Current dominant strategies and team archetypes
 
-## Repo Structure
-
-```
-vgc-competitive-skill/
-├── README.md                      # This file
-├── LICENSE                        # MIT License
-├── vgc-competitive-skill.skill    # Pre-built skill (ready to install)
-└── vgc-competitive-skill/         # Source files
-    └── SKILL.md                   # The actual skill definition
-```
-
 ## Contributing
 
 PRs welcome! If you have improvements to the skill — better prompts, additional features, more reliable API queries — please open an issue or pull request.
