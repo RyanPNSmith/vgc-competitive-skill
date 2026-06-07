@@ -1,7 +1,7 @@
 ---
 name: vgc-competitive
-description: Help with competitive VGC Pokémon team building, strategy, and meta analysis. Use this skill whenever the user wants to build optimized VGC teams, analyze their current teams, get moveset recommendations, understand competitive viability, or stay informed on the current competitive meta. Pulls live data from Smogon's competitive database and usage statistics to provide data-driven team recommendations. Use for VGC strategy questions, team building guidance, moveset optimization, item selection, EV spread recommendations, and meta-game analysis.
-compatibility: Requires access to data.pkmn.cc API for competitive data
+description: Help with competitive VGC Pokémon team building, strategy, and meta analysis. Use this skill whenever the user wants to build optimized VGC teams, analyze their current teams, get moveset recommendations, understand competitive viability, or stay informed on the current competitive meta. Pulls live usage statistics AND real tournament-winning team lists (Limitless VGC, Pikalytics, Smogon) to ground recommendations in what top players actually run, not just mechanics reasoning. Use for VGC strategy questions, team building guidance, moveset optimization, item selection, EV spread recommendations, and meta-game analysis.
+compatibility: Requires web access to fetch live data from limitlessvgc.com, pikalytics.com, and data.pkmn.cc
 ---
 
 # VGC Competitive Pokémon Assistant
@@ -20,8 +20,15 @@ This skill helps with all aspects of competitive VGC team building and strategy 
 
 ## How to Use This Skill
 
+### Default Behavior: Always Use the Current Format
+Unless the user explicitly asks for a different format, **always default to the current active competitive format.** Do not ask the user which format/series/regulation they mean — determine it yourself first:
+- Search for the current active regulation/series and its date window (e.g., "current VGC regulation 2026" or the relevant simulator's active ruleset) before giving any team advice.
+- Apply that format's rules (legal Pokémon, banlist, item/mechanic restrictions, EV system) to every recommendation.
+- Only use a different format if the user explicitly names one (e.g., "build me a Regulation G team" or "what about the old Series 1 rules"). In that case, use the requested format instead.
+- If a request is ambiguous, assume the current format rather than asking.
+
 ### 1. Building a New Team
-Provide the current VGC season/series and your team concept (e.g., "sun-based hyper offensive team" or "trick room setup"). The skill will:
+Provide your team concept (e.g., "sun-based hyper offensive team" or "trick room setup"); the current format is assumed by default unless you specify otherwise. The skill will:
 - Query current meta usage statistics
 - Recommend Pokémon that fit your strategy
 - Suggest competitive movesets and EV spreads
@@ -48,16 +55,38 @@ Ask questions like "What's dominating VGC right now?" or "How do I counter the c
 - Explain the meta narrative
 - Suggest strategies to exploit weaknesses
 
-## Data Sources
+## Data Sources & How to Fetch Them
 
-This skill uses:
-- **Smogon API** (data.pkmn.cc) - Competitive movesets, analyses, and usage statistics for VGC formats
-- **Tournament results** - Recent top finishes and team lists when available
-- **Meta trends** - Current dominant strategies and team archetypes
+Before making meta or "what's standard" claims, pull live data. Use web_fetch on these (they return clean, parseable content). First identify the current format slug (e.g. `m-a`) from the Limitless homepage or its most recent tournament, then plug it into the URLs below.
+
+**Limitless VGC — usage + real tournament team lists (primary source for "what wins"):**
+- `https://limitlessvgc.com/` — current top Pokémon by usage % and a list of recent tournaments (with player counts and IDs).
+- `https://limitlessvgc.com/pokemon?format=<slug>` — full usage ranking for a format.
+- `https://limitlessvgc.com/teams?format=<slug>` — top-placing team lists from recent tournaments. Each row links to a full team page.
+- `https://limitlessvgc.com/teams/<id>` — a complete team list: every Pokémon's **item, ability, nature, and four moves**. This is the ground truth for items (including multiple Mega Stones), spreads patterns, and move choices.
+- `https://limitlessvgc.com/tournaments/<id>` — a specific tournament's standings and date.
+
+**Pikalytics (`pikalytics.com`)** — usage %, win rates, common moves/items/abilities/teammates per Pokémon for the active regulation.
+
+**Smogon API (`data.pkmn.cc`)** — sample competitive sets and analyses. Secondary; good for movepool sanity-checks, weaker for current-tournament reality.
+
+### Workflow for grounding a claim
+1. Fetch the homepage to confirm the current format slug and the top-usage shape.
+2. For team-composition questions (e.g. "is running two Megas standard?"), open 2–4 actual `teams/<id>` pages from recent top cuts and read the real items/sets — do not infer from sprites or from game mechanics alone.
+3. Cite the specific tournament, placement, and player when stating that something is or isn't standard.
+
+## Evidence Rule (read this before asserting "standard" / "optimal" / "illegal")
+
+Never claim a team-building choice is standard, off-meta, optimal, suboptimal, or rules-illegal based on game-mechanics reasoning alone. Game mechanics tell you what is *possible*; only tournament team lists tell you what is *good practice*. The two can diverge — e.g., "you can only Mega Evolve once per battle" is true, yet top teams routinely carry two Mega Stones because bring-6/pick-4 team preview makes the second Mega a matchup option, not a wasted slot.
+
+Concretely:
+- Before saying "X is standard/not standard," open real `teams/<id>` pages and confirm. If you can't verify, say so explicitly and label the take as mechanics-based reasoning, not data.
+- A correct mechanic does not license a strategic conclusion. State the mechanic, then check whether winning lists actually treat it the way your conclusion assumes.
+- When the data contradicts an earlier statement, correct it plainly and cite the team list that shows otherwise.
 
 ## Important Notes
 
-- **Format Specificity** - VGC rules change seasonally (by "series"). Always specify the current series when asking for team advice
+- **Format Specificity** - VGC rules change seasonally (by "series"/"regulation"). Default to the current active format and verify it by searching before giving advice; only switch formats when the user explicitly requests a different one
 - **Timing** - Meta analysis reflects the most recent available data; may lag behind very new tournament results by a few days
 - **EV Spreads** - Common spreads are provided, but exact EV recommendations depend on your specific team and role within it
 - **Testing** - All team suggestions should be tested in practice; meta environments evolve quickly
