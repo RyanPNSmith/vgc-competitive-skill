@@ -1,77 +1,59 @@
-# VGC Competitive Pokémon Skill for Claude
-
-A Claude Skill that helps with competitive VGC (Video Game Championships) Pokémon team building, meta analysis, and strategic decision-making. Pulls data from Smogon's competitive database to give you data-driven recommendations.
-
-## What It Does
-
-- 🏆 **Team Building** — Generates optimized VGC team suggestions based on current meta usage statistics
-- 🔍 **Team Analysis** — Evaluates your existing team for coverage gaps, weaknesses, and synergy
-- ⚔️ **Moveset Optimization** — Recommends competitive movesets, items, abilities, and EV spreads
-- 📊 **Meta Analysis** — Explains what's dominating the current meta and how to counter it
-- 🎯 **Strategic Advice** — Provides guidance on team composition and battle strategies
-
+# VGC Competitive Pokémon Skill
+ 
+A [Claude skill](https://docs.claude.com) for building, analyzing, and optimizing competitive **VGC (Video Game Championships)** Pokémon teams. It helps with team building, team analysis, moveset and item choices, EV spreads, viability checks, and meta questions — and it grounds its advice in **live usage stats and real tournament team lists** instead of guessing from game mechanics.
+ 
+## What it does
+ 
+- **Team building** — suggests Pokémon and cores that fit a concept (sun offense, Trick Room, etc.) for the current format.
+- **Team analysis** — reviews a team you paste in for coverage gaps, weaknesses, and synergy problems.
+- **Moveset & item optimization** — recommends moves, items, abilities, and EV spreads for a specific Pokémon.
+- **Meta analysis** — explains what's dominating right now, why, and how to counter it.
+- **Matchup checks** — flags the Pokémon your team is likely to struggle against.
+## How it works
+ 
+This is a *skill*, not a program. A skill is a single instruction file (`SKILL.md`) that Claude reads when the topic comes up. The file doesn't run code — it tells Claude *how* to approach VGC questions. Three rules do most of the heavy lifting:
+ 
+**1. It defaults to the current format automatically.**
+VGC rotates its rules every few months (each window is a "regulation," e.g. Regulation M-A). The skill instructs Claude to figure out the active format on its own and apply that format's legal Pokémon, banlist, and mechanics — without asking you which format you mean. You only need to name a format if you want an *old* one.
+ 
+**2. It pulls real data before answering.**
+When a question depends on what's actually winning, the skill points Claude at live sources and tells it to go read them:
+ 
+- **Limitless VGC** — usage percentages plus full tournament team lists. The team pages show every Pokémon's exact item, ability, nature, and four moves, so Claude can see what top players really ran (not just which Pokémon they used).
+- **Pikalytics** — usage, win rates, and the most common moves/items/spreads/teammates per Pokémon.
+- **Smogon (data.pkmn.cc)** — sample sets, used as a secondary sanity-check.
+So a claim like "Garchomp is the most-used Pokémon" or "this set is standard" comes from a tournament database Claude actually fetched, with the specific event and placement cited.
+ 
+**3. It refuses to confuse "possible" with "good." (the Evidence Rule)**
+This is the most important part, and it came directly from a real mistake. Game mechanics tell you what's *legal*; only tournament results tell you what's *good practice* — and the two often disagree. The classic example: you can only Mega Evolve one Pokémon per battle, so it *seems* pointless to put two Mega Stones on a team. But top players do it constantly, because in bring-6/pick-4 team preview the second Mega is a matchup option, not a wasted slot. The skill forbids Claude from calling something "standard," "optimal," or "illegal" from mechanics reasoning alone — it has to open real team lists and confirm first, and if it can't verify, it has to say so.
+ 
+The practical upshot: the skill is designed to be *correctable by data*. If Claude says something and the tournament lists disagree, it's instructed to check and walk it back rather than defend the guess.
+ 
 ## Installation
-
-### Option 1: Install the Pre-Built Skill (Easiest)
-
-1. Download [`vgc-competitive-skill.skill`](./vgc-competitive-skill.skill) from this repo
-2. Go to [claude.ai](https://claude.ai) → **Settings** → **Capabilities** → **Skills**
-3. Click **Upload Skill** and select the `.skill` file
-4. Done! The skill will trigger on VGC-related questions
-
-### Option 2: Build from Source
-
-If you want to customize the skill:
-
-1. Clone this repo:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/vgc-competitive-skill.git
-   cd vgc-competitive-skill
-   ```
-
-2. Edit `SKILL.md` to your liking
-
-3. Package it (requires Python 3):
-   ```bash
-   # Get the packaging script from Anthropic's skill-creator
-   # Then zip the folder:
-   zip -r vgc-competitive-skill.skill vgc-competitive-skill/
-   ```
-
-4. Upload as in Option 1
-
-## Example Queries
-
-Once installed, just ask Claude things like:
-
-- *"Build me a competitive VGC 2025 team around Calyrex-Shadow"*
-- *"Analyze my team: Incineroar, Landorus-T, Calyrex-S, Regieleki, Dirge, Wailord"*
-- *"What movesets are top VGC players running on Incineroar right now?"*
-- *"What's currently dominating the VGC meta and how do I counter it?"*
-- *"Is Urshifu-Rapid-Strike viable in current VGC?"*
-
-## Data Sources
-
-This skill pulls competitive data from:
-
-- **[data.pkmn.cc](https://data.pkmn.cc)** — Smogon's API for analyses, movesets, and usage statistics
-- **Tournament results** via web search — Recent top finishes when available
-- **Meta trends** — Current dominant strategies and team archetypes
-
-## Contributing
-
-PRs welcome! If you have improvements to the skill — better prompts, additional features, more reliable API queries — please open an issue or pull request.
-
-Ideas for contributions:
-- Add specific Smogon API endpoint references
-- Add a `references/` folder with VGC mechanics documentation
-- Improve the skill description for better triggering
-- Add test cases to validate the skill output
-
-## License
-
-MIT — See [LICENSE](./LICENSE)
-
+ 
+Drop the `SKILL.md` file into your skills directory (for example, `vgc-competitive/SKILL.md`). Claude loads it automatically when a VGC question comes up.
+ 
+```
+your-skills/
+└── vgc-competitive/
+    └── SKILL.md
+```
+ 
+It needs **web access** so Claude can fetch the live data sources above. Without it, the skill still works from general knowledge but loses its main advantage.
+ 
+## Example questions
+ 
+- "Build me a team around Sneasler for the current format."
+- "Analyze my team: Garchomp, Tyranitar, Froslass, Hisuian Arcanine, Sinistcha, Sneasler."
+- "What moves and item is Incineroar running right now?"
+- "The meta seems sun-heavy lately — how do I counter that?"
+- "Is [Pokémon] viable in the current regulation?"
+- "What's the standard EV spread for [Pokémon]?"
+## Things to keep in mind
+ 
+- **Data has a small lag.** Tournament databases update within days of an event, so the very newest results may not be reflected yet.
+- **EV spreads are starting points.** The right spread depends on a Pokémon's exact role on *your* team, not just the format average.
+- **Always test.** Meta environments shift fast; treat recommendations as informed starting points, not final answers.
 ## Disclaimer
-
-This is an unofficial fan project. Not affiliated with Nintendo, The Pokémon Company, or Smogon.
+ 
+This is a fan-made tool for competitive play. Pokémon and all related names are trademarks of Nintendo, Game Freak, and The Pokémon Company. This project is not affiliated with or endorsed by them. Data is sourced from community sites (Limitless VGC, Pikalytics, Smogon); credit and thanks to those communities.
